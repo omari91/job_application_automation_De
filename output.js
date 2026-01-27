@@ -132,9 +132,9 @@ function testOutput() {
 
     // Mock filters
     const mockFilters = [
-      { Keyword: 'CIO', Weight: 10, Type: 'title' },
-      { Keyword: 'Remote', Weight: 4, Type: 'any' },
-      { Keyword: 'Junior', Weight: -10, Type: 'negative' }
+      { Keyword: 'Power Systems', Weight: 10, Type: 'title' },
+      { Keyword: 'Germany', Weight: 4, Type: 'any' },
+      { Keyword: 'Intern', Weight: -10, Type: 'negative' }
     ];
 
     // Mock jobs
@@ -142,32 +142,32 @@ function testOutput() {
       {
         ID: generateUniqueID(),
         DateFound: formatDate(new Date(), mockConfig.dateFormat),
-        Title: 'CIO Position',
-        Company: 'Tech Corp',
-        Location: 'Remote',
+        Title: 'Senior Power Systems Engineer',
+        Company: 'Energy Grid Co',
+        Location: 'Berlin, Germany',
         Link: 'https://example.com/job1',
         Source: 'TestSource',
-        Snippet: 'CIO Position from TestSource'
+        Snippet: 'Senior Power Systems Engineer from TestSource'
       },
       {
         ID: generateUniqueID(),
         DateFound: formatDate(new Date(), mockConfig.dateFormat),
-        Title: 'Junior Developer',
+        Title: 'Intern Developer',
         Company: 'Startup Inc',
-        Location: 'NY',
+        Location: 'Munich',
         Link: 'https://example.com/job2',
         Source: 'TestSource',
-        Snippet: 'Junior Developer from TestSource'
+        Snippet: 'Intern Developer from TestSource'
       },
       {
         ID: generateUniqueID(),
         DateFound: formatDate(new Date(), mockConfig.dateFormat),
-        Title: 'CIO Duplicate',
-        Company: 'Tech Corp',
-        Location: 'Remote',
+        Title: 'Power Systems Duplicate',
+        Company: 'Energy Grid Co',
+        Location: 'Berlin, Germany',
         Link: 'https://example.com/job1', // Duplicate link
         Source: 'TestSource',
-        Snippet: 'CIO Duplicate from TestSource'
+        Snippet: 'Power Systems Duplicate from TestSource'
       }
     ];
 
@@ -191,7 +191,7 @@ function testOutput() {
     const testJob = mockJobs[0];
     const { score, matchedKeywords } = calculateScore(testJob, mockFilters);
     console.log('calculateScore test:', { score, matchedKeywords });
-    if (score !== 14 || matchedKeywords.length !== 2 || !matchedKeywords.includes('CIO') || !matchedKeywords.includes('Remote')) {
+    if (score !== 14 || matchedKeywords.length !== 2 || !matchedKeywords.includes('Power Systems') || !matchedKeywords.includes('Germany')) {
       throw new Error('calculateScore failed: incorrect score or keywords');
     }
 
