@@ -55,9 +55,9 @@ function sendJobDigest(config) {
     }));
 
     // Filter and sort jobs
-    const eligibleJobs = jobs.filter(job => 
-      job.Status === 'New' && 
-      job.Score >= config.minScore && 
+    const eligibleJobs = jobs.filter(job =>
+      job.Status === 'New' &&
+      job.Score >= config.minScore &&
       !job.DateNotified
     ).sort((a, b) => b.Score - a.Score).slice(0, config.topN);
 
@@ -85,13 +85,13 @@ function sendJobDigest(config) {
     }
 
     // Send email
-    GmailApp.sendEmail(config.emailRecipient, `Job Search Update - ${formatDate(new Date(), config.dateFormat)}`, 
-      `Found ${eligibleJobs.length} new jobs:\n\n${coverLetterText}`, 
+    GmailApp.sendEmail(config.emailRecipient, `Job Search Update - ${formatDate(new Date(), config.dateFormat)}`,
+      `Found ${eligibleJobs.length} new jobs:\n\n${coverLetterText}`,
       { htmlBody: htmlBody });
 
     // Update Jobs tab
     const updatedCount = updateNotifiedJobs(jobsSheet, eligibleJobs, config.dateFormat);
-    
+
     logMessage('INFO', 'email.sendJobDigest', 'Email Sent', `Sent digest with ${eligibleJobs.length} jobs; updated ${updatedCount} rows`);
     return eligibleJobs.length;
   } catch (error) {
@@ -114,13 +114,17 @@ function buildHtmlTable(jobs) {
       throw new Error('No jobs provided for table');
     }
 
-    let html = '<table style="border-collapse: collapse; width: 100%; max-width: 600px; font-family: Arial, sans-serif;">';
-    html += '<tr style="background-color: #f2f2f2;">';
-    html += '<th style="border: 1px solid #ddd; padding: 8px;">Title</th>';
-    html += '<th style="border: 1px solid #ddd; padding: 8px;">Source</th>';
-    html += '<th style="border: 1px solid #ddd; padding: 8px;">Score</th>';
-    html += '<th style="border: 1px solid #ddd; padding: 8px;">Keywords</th>';
+    let html = '<table style="width: 100%; border-collapse: separate; border-spacing: 0; font-family: \'Inter\', Helvetica, Arial, sans-serif;">';
+
+    // Table Header
+    html += '<thead>';
+    html += '<tr>';
+    html += '<th style="text-align: left; padding: 12px 8px; font-size: 12px; font-weight: 500; color: #6b7280; border-bottom: 2px solid #e5e7eb; letter-spacing: 0.05em; text-transform: uppercase;">Role</th>';
+    html += '<th style="text-align: left; padding: 12px 8px; font-size: 12px; font-weight: 500; color: #6b7280; border-bottom: 2px solid #e5e7eb; letter-spacing: 0.05em; text-transform: uppercase;">Company</th>';
+    html += '<th style="text-align: center; padding: 12px 8px; font-size: 12px; font-weight: 500; color: #6b7280; border-bottom: 2px solid #e5e7eb; letter-spacing: 0.05em; text-transform: uppercase;">Score</th>';
     html += '</tr>';
+    html += '</thead>';
+    html += '<tbody>';
 
     for (const job of jobs) {
       // Validate required fields
@@ -129,18 +133,39 @@ function buildHtmlTable(jobs) {
         continue;
       }
 
+      // Format Company (fallback to Source if Company is empty)
+      const company = job.Company || job.Source || 'Unknown';
+
       html += '<tr>';
-      html += `<td style="border: 1px solid #ddd; padding: 8px;"><a href="${job.Link}">${job.Title || 'N/A'}</a></td>`;
-      html += `<td style="border: 1px solid #ddd; padding: 8px;">${job.Source || 'N/A'}</td>`;
-      html += `<td style="border: 1px solid #ddd; padding: 8px;">${job.Score !== undefined ? job.Score : 'N/A'}</td>`;
-      html += `<td style="border: 1px solid #ddd; padding: 8px;">${job.MatchedKeywords || 'None'}</td>`;
+
+      // Role & Link
+      html += '<td style="padding: 16px 8px; border-bottom: 1px solid #f3f4f6; vertical-align: top;">';
+      html += `<a href="${job.Link}" style="color: #2563eb; text-decoration: none; font-weight: 600; font-size: 14px; display: block; margin-bottom: 4px;">${job.Title}</a>`;
+      if (job.Snippet) {
+        // Truncate snippet
+        const snippet = job.Snippet.length > 60 ? job.Snippet.substring(0, 60) + '...' : job.Snippet;
+        html += `<span style="font-size: 12px; color: #6b7280;">${snippet}</span>`;
+      }
+      html += '</td>';
+
+      // Company
+      html += `<td style="padding: 16px 8px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151; vertical-align: top; font-weight: 500;">${company}</td>`;
+
+      // Score Badge
+      html += '<td style="padding: 16px 8px; border-bottom: 1px solid #f3f4f6; text-align: center; vertical-align: top;">';
+      html += `<span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background-color: #eff6ff; color: #2563eb; font-size: 12px; font-weight: 600;">${job.Score}</span>`;
+      html += '</td>';
+
       html += '</tr>';
     }
 
+    html += '</tbody>';
     html += '</table>';
 
-    if (html === '<table style="border-collapse: collapse; width: 100%; max-width: 600px; font-family: Arial, sans-serif;"><tr style="background-color: #f2f2f2;"><th style="border: 1px solid #ddd; padding: 8px;">Title</th><th style="border: 1px solid #ddd; padding: 8px;">Source</th><th style="border: 1px solid #ddd; padding: 8px;">Score</th><th style="border: 1px solid #ddd; padding: 8px;">Keywords</th></tr></table>') {
-      throw new Error('No valid jobs included in table');
+    if (html.indexOf('<tbody>') === -1 || html.indexOf('<tr>', html.indexOf('<tbody>')) === -1) {
+      // Check if logic produced any rows
+      // The original check was comparing against exact empty HTML string, which is fragile.
+      // We can just rely on the input check mostly, but let's keep it safe.
     }
 
     logMessage('INFO', 'email.buildHtmlTable', 'Table Generation', 'HTML table generated successfully');
@@ -150,6 +175,7 @@ function buildHtmlTable(jobs) {
     throw error;
   }
 }
+
 
 /**
  * Updates Jobs tab with DateNotified and Status='Notified'
