@@ -21,18 +21,18 @@ Perfect for engineers and IT professionals applying for roles like Grid Connecti
 
 ## 📂 Project Structure
 
-job-aggregator-automation/
-├── utils.gs # Utility functions (logging, date formatting, IDs) - v1.3
-├── input.gs # Reads Config and Sources tabs - v1.2
-├── scraper.gs # Scrapes RSS feeds - v1.3
-├── output.gs # Processes and scores jobs - v1.1
-├── appending.gs # Appends jobs to Jobs tab - v1.4
-├── email.gs # Sends email digests - v1.4
-├── menu.gs # Custom Google Sheets menu - v1.0
-├── main.gs # Orchestrates automation - v1.3
-├── emailTemplate.html # HTML email template - v1.0
-├── README.md # Project documentation
-├── .gitignore # Excludes sensitive files
+job-aggregator-automation-de/
+├── utils.gs           # Utility functions (logging, date formatting, IDs)
+├── input.gs           # Reads Config and Sources tabs
+├── scraper.gs         # Scrapes RSS feeds
+├── output.gs          # Processes and scores jobs
+├── appending.gs       # Appends jobs to Jobs tab
+├── email.gs           # Sends email digests
+├── menu.gs            # Custom Google Sheets menu
+├── main.gs            # Orchestrates automation (entry functions)
+├── emailTemplate.html # HTML email template for the digest
+├── README.md          # Project documentation
+├── .gitignore         # Excludes sensitive files
 
 ---
 
