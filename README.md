@@ -134,8 +134,15 @@ Add these to your `Sources` tab:
 | Remotive                 | https://remotive.com/feed                                          | Curated remote jobs  | TRUE   |
 | Cybersecurity Jobs RSS   | https://rss.indeed.com/rss?q=cybersecurity&l=remote                 | Cybersecurity roles  | TRUE   |
 | Cloud Operations Jobs RSS| https://rss.indeed.com/rss?q=cloud+operations&l=remote             | Cloud-focused roles  | TRUE   |
+| LinkedIn – Grid Connection Engineer DE | https://your-linkedin-grid-engineer-de.rss    | Grid Connection Engineer roles in Germany (RSS) | TRUE   |
+| LinkedIn – Power Systems Engineer DE   | https://your-linkedin-power-systems-de.rss    | Power / grid engineer roles in Germany (RSS)      | TRUE   |
+| LinkedIn – HVDC / Grid Berlin          | https://your-linkedin-hvdc-berlin.rss         | HVDC / grid roles around Berlin (RSS)             | TRUE   |
+| LinkedIn – Engineering Germany         | https://your-linkedin-engineering-de.rss      | Broad engineering roles in Germany (filtered RSS) | FALSE  |
+
+*Note: For LinkedIn sources, perform a search on LinkedIn (e.g., "Grid Connection Engineer" in "Germany"), copy the URL, and use a tool like RSS.app to convert it to an RSS feed.*
 
 *See `sample_sources.csv` for more examples. Disable slow feeds by setting Active = FALSE.*  
+
 
 ---
 
