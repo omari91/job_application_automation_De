@@ -3,7 +3,6 @@
 *.html~
 
 # Sensitive files
-appsscript.json
 secrets.json
 *.secret
 *.key

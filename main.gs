@@ -39,7 +39,9 @@ function runJobSearch() {
 function setupScriptProperties() {
   try {
     const properties = PropertiesService.getScriptProperties();
-    properties.setProperty('SHEET_ID', '1fwfkdyReTRCMywq6VmQT7XN5KVu0DWcBOpY0XOxgoD0'); // Replace with your ID
+    // Intentionally a placeholder to avoid committing a real spreadsheet ID.
+    // Set this in Apps Script UI (Project Settings -> Script Properties) or replace below before running.
+    properties.setProperty('SHEET_ID', 'YOUR_SHEET_ID_HERE');
     logMessage('INFO', 'main.setupScriptProperties', 'Setup Completed', 'Script Properties configured');
   } catch (error) {
     logMessage('ERROR', 'main.setupScriptProperties', 'Setup Failed', `Failed to set properties: ${error.message}`);

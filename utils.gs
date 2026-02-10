@@ -107,20 +107,17 @@ function formatDate(date, format) {
  */
 function generateUniqueID(type) {
   try {
-    // Validate type
-    if (!type || typeof type !== 'string') {
-      console.error(`generateUniqueID: Invalid type parameter: ${type}`);
-      return 'UNKNOWN-000';
-    }
+    // Backward-compatible default: many modules/tests call generateUniqueID() with no args.
+    const safeType = typeof type === 'string' && type.trim() ? type.trim() : 'INFO';
 
     const scriptProperties = PropertiesService.getScriptProperties();
-    const key = `${type.toUpperCase()}_COUNTER`;
+    const key = `${safeType.toUpperCase()}_COUNTER`;
     let counter = parseInt(scriptProperties.getProperty(key) || '0', 10) + 1;
     scriptProperties.setProperty(key, counter.toString());
-    return `${type.toUpperCase()}-${String(counter).padStart(3, '0')}`;
+    return `${safeType.toUpperCase()}-${String(counter).padStart(3, '0')}`;
   } catch (error) {
     console.error(`generateUniqueID: Failed to generate ID: ${error.message}`);
-    return 'UNKNOWN-000';
+    return 'INFO-000';
   }
 }
 

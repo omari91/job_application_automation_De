@@ -16,9 +16,13 @@ function sendJobDigest(config) {
     logMessage('INFO', 'email.sendJobDigest', 'Email Processing', 'Starting job digest email process');
 
     // Validate config
-    if (!config || !config.emailRecipient || !config.topN || !config.coverLetterDocId) {
-      throw new Error('Missing required config: emailRecipient, topN, or coverLetterDocId');
+    if (!config || !config.emailRecipient) {
+      throw new Error('Missing required config: emailRecipient');
     }
+    const topN = Math.max(1, parseInt(config.topN, 10) || 10);
+    const minScore = Number(config.minScore);
+    const effectiveMinScore = Number.isFinite(minScore) ? minScore : 1;
+    const dateFormat = config.dateFormat || 'yyyy-MM-dd';
 
     // Get Jobs tab
     const sheetId = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
@@ -57,9 +61,9 @@ function sendJobDigest(config) {
     // Filter and sort jobs
     const eligibleJobs = jobs.filter(job =>
       job.Status === 'New' &&
-      job.Score >= config.minScore &&
+      job.Score >= effectiveMinScore &&
       !job.DateNotified
-    ).sort((a, b) => b.Score - a.Score).slice(0, config.topN);
+    ).sort((a, b) => b.Score - a.Score).slice(0, topN);
 
     if (eligibleJobs.length === 0) {
       logMessage('INFO', 'email.sendJobDigest', 'No Data', 'No eligible jobs to email');
@@ -72,25 +76,27 @@ function sendJobDigest(config) {
     // Load email template
     const template = HtmlService.createTemplateFromFile('emailTemplate');
     template.jobsTable = htmlTable;
-    template.today = formatDate(new Date(), config.dateFormat);
+    template.today = formatDate(new Date(), dateFormat);
     const htmlBody = template.evaluate().getContent();
 
     // Get cover letter text
     let coverLetterText = '';
-    try {
-      const doc = DocumentApp.openById(config.coverLetterDocId);
-      coverLetterText = doc.getBody().getText().substring(0, 500); // Limit length
-    } catch (error) {
-      logMessage('WARN', 'email.sendJobDigest', 'Doc Read Failed', `Failed to read cover letter: ${error.message}`);
+    if (config.coverLetterDocId) {
+      try {
+        const doc = DocumentApp.openById(config.coverLetterDocId);
+        coverLetterText = doc.getBody().getText().substring(0, 500); // Limit length
+      } catch (error) {
+        logMessage('WARN', 'email.sendJobDigest', 'Doc Read Failed', `Failed to read cover letter: ${error.message}`);
+      }
     }
 
     // Send email
-    GmailApp.sendEmail(config.emailRecipient, `Job Search Update - ${formatDate(new Date(), config.dateFormat)}`,
+    GmailApp.sendEmail(config.emailRecipient, `Job Search Update - ${formatDate(new Date(), dateFormat)}`,
       `Found ${eligibleJobs.length} new jobs:\n\n${coverLetterText}`,
       { htmlBody: htmlBody });
 
     // Update Jobs tab
-    const updatedCount = updateNotifiedJobs(jobsSheet, eligibleJobs, config.dateFormat);
+    const updatedCount = updateNotifiedJobs(jobsSheet, eligibleJobs, dateFormat);
 
     logMessage('INFO', 'email.sendJobDigest', 'Email Sent', `Sent digest with ${eligibleJobs.length} jobs; updated ${updatedCount} rows`);
     return eligibleJobs.length;

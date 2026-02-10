@@ -30,7 +30,9 @@ job-aggregator-automation-de/
 ├── email.gs           # Sends email digests
 ├── menu.gs            # Custom Google Sheets menu
 ├── main.gs            # Orchestrates automation (entry functions)
+├── appsscript.json    # Apps Script manifest (scopes/runtime)
 ├── emailTemplate.html # HTML email template for the digest
+├── index.html         # Optional UI mock (not used by Apps Script runtime)
 ├── README.md          # Project documentation
 ├── .gitignore         # Excludes sensitive files
 
@@ -77,10 +79,19 @@ Follow these steps to get the Job Aggregator running in your Google Sheets and A
 - Ensure file names match exactly (e.g., `input.gs`, not `Input.gs`).  
 - Save the project (`Ctrl+S` / `Cmd+S`).  
 
+**Optional (recommended): Deploy with `clasp`**
+1. Install `clasp`: `npm i -g @google/clasp`  
+2. Login: `clasp login`  
+3. Create a new Apps Script project (in this folder): `clasp create --type sheets`  
+4. Push code: `clasp push`  
+5. Note: `.clasp.json` contains your `scriptId` and should stay uncommitted (this repo ignores it).
+
 ### 3. Configure Script Properties 🔑
 - In Apps Script → `Project Settings > Script Properties`.  
 - Add: `SHEET_ID = <your_spreadsheet_id>`.  
 - Save.  
+  
+Tip: This repo includes a helper `setupScriptProperties()` in `main.gs`, but it intentionally uses a placeholder (`YOUR_SHEET_ID_HERE`) so you don’t accidentally commit a real Sheet ID.
 
 ### 4. Authorize Permissions 🔐
 - Run any function (e.g., `testInput`) in Apps Script.  
@@ -221,43 +232,6 @@ For engineers, think of these two repositories as separate stages in your **Job 
 ## 💻 Developer Setup (Terminal)
 
 Prefer the command line? You can manage and execute this project using **clasp** (Command Line Apps Script Projects).
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) installed.
-- A Google Cloud Platform project with **Apps Script API** enabled.
-
-### 1. Install & Login
-```bash
-npm install -g @google/clasp
-clasp login
-```
-
-### 2. Connect to Google Cloud
-Run one of the following in the project root:
-
-*   **Option A: Create a new Sheet + Script**
-    ```bash
-    clasp create --title "Job Aggregator" --type sheets
-    ```
-*   **Option B: Clone an existing Script**
-    ```bash
-    clasp clone <YOUR_SCRIPT_ID>
-    ```
-
-### 3. Deploy Code
-Upload the local `.js` files to Google Drive (they will be converted to `.gs` automatically):
-```bash
-clasp push
-```
-
-### 4. Run Execution
-Since this project is attached to a Google Sheet, you cannot run it directly from the terminal (Google restriction).
-
-1.  **Push** your code: `clasp push`
-2.  **Open** the Sheet: `clasp open`
-3.  **Run**: Use the custom menu **Job Aggregator > Run Job Search** in the Sheet.
-
----
 
 ## 🤝 Contributing
 
